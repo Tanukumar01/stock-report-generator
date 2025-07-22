@@ -26,8 +26,8 @@ function analyzeStock(current, avg10) {
   return { good, bad, risk, sentiment, hold };
 }
 
-// Main endpoint
-app.get('/analyze', async (req, res) => {
+// Main endpoint logic extracted to a function
+async function handleAnalyze(req, res) {
   try {
     // 1. Read input stocks (E5:K9)
     const readRange = 'Sheet1!E5:K9';
@@ -77,7 +77,12 @@ app.get('/analyze', async (req, res) => {
     console.error(err);
     res.status(500).json({ error: err.message });
   }
-});
+}
+
+// Register for both GET and POST
+app.use(express.json());
+app.get('/analyze', handleAnalyze);
+app.post('/analyze', handleAnalyze);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
